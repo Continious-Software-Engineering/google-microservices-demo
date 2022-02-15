@@ -20,8 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ReviewServiceClient interface {
 	AddReview(ctx context.Context, in *AddReviewRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetReviews(ctx context.Context, in *GetReviewsRequest, opts ...grpc.CallOption) (ReviewService_GetReviewsClient, error)
-	GetReview(ctx context.Context, in *GetReviewRequest, opts ...grpc.CallOption) (*Review, error)
-	UpdateReview(ctx context.Context, in *UpdateReviewRequest, opts ...grpc.CallOption) (*Empty, error)
+	DeleteReview(ctx context.Context, in *DeleteReviewRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type reviewServiceClient struct {
@@ -73,18 +72,9 @@ func (x *reviewServiceGetReviewsClient) Recv() (*Review, error) {
 	return m, nil
 }
 
-func (c *reviewServiceClient) GetReview(ctx context.Context, in *GetReviewRequest, opts ...grpc.CallOption) (*Review, error) {
-	out := new(Review)
-	err := c.cc.Invoke(ctx, "/ReviewService/GetReview", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *reviewServiceClient) UpdateReview(ctx context.Context, in *UpdateReviewRequest, opts ...grpc.CallOption) (*Empty, error) {
+func (c *reviewServiceClient) DeleteReview(ctx context.Context, in *DeleteReviewRequest, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/ReviewService/UpdateReview", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ReviewService/DeleteReview", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +87,7 @@ func (c *reviewServiceClient) UpdateReview(ctx context.Context, in *UpdateReview
 type ReviewServiceServer interface {
 	AddReview(context.Context, *AddReviewRequest) (*Empty, error)
 	GetReviews(*GetReviewsRequest, ReviewService_GetReviewsServer) error
-	GetReview(context.Context, *GetReviewRequest) (*Review, error)
-	UpdateReview(context.Context, *UpdateReviewRequest) (*Empty, error)
+	DeleteReview(context.Context, *DeleteReviewRequest) (*Empty, error)
 	mustEmbedUnimplementedReviewServiceServer()
 }
 
@@ -112,11 +101,8 @@ func (UnimplementedReviewServiceServer) AddReview(context.Context, *AddReviewReq
 func (UnimplementedReviewServiceServer) GetReviews(*GetReviewsRequest, ReviewService_GetReviewsServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetReviews not implemented")
 }
-func (UnimplementedReviewServiceServer) GetReview(context.Context, *GetReviewRequest) (*Review, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetReview not implemented")
-}
-func (UnimplementedReviewServiceServer) UpdateReview(context.Context, *UpdateReviewRequest) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateReview not implemented")
+func (UnimplementedReviewServiceServer) DeleteReview(context.Context, *DeleteReviewRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteReview not implemented")
 }
 func (UnimplementedReviewServiceServer) mustEmbedUnimplementedReviewServiceServer() {}
 
@@ -170,38 +156,20 @@ func (x *reviewServiceGetReviewsServer) Send(m *Review) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _ReviewService_GetReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetReviewRequest)
+func _ReviewService_DeleteReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteReviewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ReviewServiceServer).GetReview(ctx, in)
+		return srv.(ReviewServiceServer).DeleteReview(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ReviewService/GetReview",
+		FullMethod: "/ReviewService/DeleteReview",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).GetReview(ctx, req.(*GetReviewRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReviewService_UpdateReview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateReviewRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReviewServiceServer).UpdateReview(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ReviewService/UpdateReview",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServiceServer).UpdateReview(ctx, req.(*UpdateReviewRequest))
+		return srv.(ReviewServiceServer).DeleteReview(ctx, req.(*DeleteReviewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -218,12 +186,8 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ReviewService_AddReview_Handler,
 		},
 		{
-			MethodName: "GetReview",
-			Handler:    _ReviewService_GetReview_Handler,
-		},
-		{
-			MethodName: "UpdateReview",
-			Handler:    _ReviewService_UpdateReview_Handler,
+			MethodName: "DeleteReview",
+			Handler:    _ReviewService_DeleteReview_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -233,5 +197,5 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "genproto/review-service.proto",
+	Metadata: "review-service/review-service.proto",
 }
