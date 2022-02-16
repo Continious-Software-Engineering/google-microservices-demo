@@ -632,3 +632,26 @@ the rules below could be extracted.
   width: 10px;
   height: 5px;
 }
+
+.reviews {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviews-container {
+  width: 30%;
+  align-self: center;
+}
+
+.review {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 13px;
+  width: 350px;
+  background-color: #e5e8ed;
+  font-weight: 500
+}
+
+.review-description {
+  overflow-wrap: break-word;
+}

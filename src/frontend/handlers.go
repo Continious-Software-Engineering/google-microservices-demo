@@ -183,6 +183,17 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+    reviews, err := fe.getReviews(r.Context(), id)
+    if err != nil {
+        renderHTTPError(log, r, w, errors.Wrap(err, "failed to get review"), http.StatusInternalServerError)
+        return
+    }
+
+    if r.Method == http.MethodPost {
+        rating, _ := strconv.Atoi(r.FormValue("rating"))
+        fe.addReview(r.Context(), id, int32(rating), r.FormValue("description"))
+    }
+
 	product := struct {
 		Item  *pb.Product
 		Price *pb.Money
@@ -196,6 +207,7 @@ func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request)
 		"show_currency":     true,
 		"currencies":        currencies,
 		"product":           product,
+		"reviews":           reviews,
 		"recommendations":   recommendations,
 		"cart_size":         cartSize(cart),
 		"platform_css":      plat.css,

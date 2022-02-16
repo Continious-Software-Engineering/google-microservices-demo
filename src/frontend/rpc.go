@@ -21,6 +21,8 @@ import (
 	pb "github.com/GoogleCloudPlatform/microservices-demo/src/frontend/genproto"
 
 	"github.com/pkg/errors"
+
+	reviewService "github.com/GoogleCloudPlatform/microservices-demo/src/frontend/review-service"
 )
 
 const (
@@ -124,4 +126,31 @@ func (fe *frontendServer) getAd(ctx context.Context, ctxKeys []string) ([]*pb.Ad
 		ContextKeys: ctxKeys,
 	})
 	return resp.GetAds(), errors.Wrap(err, "failed to get ads")
+}
+
+func (fe frontendServer) getReviews(ctx context.Context, id string) ([]reviewService.Review, error) {
+    stream, err := reviewService.NewReviewServiceClient(fe.reviewSvcConn).
+        GetReviews(ctx, &reviewService.GetReviewsRequest{ProductId: id})
+    if err != nil {
+        return nil, err
+    }
+    var reviews []*reviewService.Review
+    for {
+        review, err := stream.Recv()
+        if err == io.EOF {
+            break
+        }
+        if err != nil {
+            return nil, err
+        }
+        reviews = append(reviews, review)
+    }
+    return reviews, err
+}
+
+func (fe frontendServer) addReview(ctx context.Context, id string, rating int32, description string) (reviewService.Empty, error) {
+    println("BESIM DU HUND")
+    resp, err := reviewService.NewReviewServiceClient(fe.reviewSvcConn).
+        AddReview(ctx, &reviewService.AddReviewRequest{ProductId: id, Rating: rating, Description: description})
+    return resp, err
 }
