@@ -219,7 +219,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: robinsadeghpour/cse-frontend:3.0
+          image: robinsadeghpour/cse-frontend:4.0
           ports:
           - containerPort: 8080
           readinessProbe:
